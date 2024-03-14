@@ -122,7 +122,6 @@ void HandleLeaks() {
 
 static int LockStuffAndStopTheWorldCallback(struct dl_phdr_info *info,
                                             size_t size, void *data) {
-  ScopedStopTheWorldLock lock;
   DoStopTheWorldParam *param = reinterpret_cast<DoStopTheWorldParam *>(data);
   StopTheWorld(param->callback, param->argument);
   return 1;
@@ -139,6 +138,7 @@ static int LockStuffAndStopTheWorldCallback(struct dl_phdr_info *info,
 void LockStuffAndStopTheWorld(StopTheWorldCallback callback,
                               CheckForLeaksParam *argument) {
   DoStopTheWorldParam param = {callback, argument};
+  ScopedStopTheWorldLock lock;
   dl_iterate_phdr(LockStuffAndStopTheWorldCallback, &param);
 }
 
